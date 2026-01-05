@@ -23,3 +23,14 @@ export const authmiddleware = (req:Request,res:Response,next:NextFunction)=>{
         return;
     }
 }
+
+export const TeacherRoleMiddleware = (req:Request,res:Response,next:NextFunction)=>{
+   if(!req.role || req.role != "teacher"){
+    res.status(403).json({
+        "succes":false,
+        "error":"Forbidden. teacher access required only"
+    })
+    return;
+   }
+next();
+}

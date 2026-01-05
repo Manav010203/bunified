@@ -1,7 +1,7 @@
 import express from "express";
-import { LoginSchema, SignupSchema } from "./types";
-import { UserModel } from "./model";
-import { authmiddleware } from "./middleware";
+import { ClassSchema, LoginSchema, SignupSchema } from "./types";
+import { ClassModel, UserModel } from "./model";
+import { authmiddleware, TeacherRoleMiddleware } from "./middleware";
 import jwt from "jsonwebtoken";
 const app = express();
 const port = 3000;
@@ -72,5 +72,47 @@ app.post("/auth/login",authmiddleware,async(req,res)=>{
             "token":token
         }
     })
+})
+
+
+app.post("/class",authmiddleware,TeacherRoleMiddleware,async(req,res)=>{
+    const {success,data} = ClassSchema.safeParse(req.body);
+    if(!success){
+        res.status(401).json({
+            "success":false,
+            "error":"body provided is not corrected"
+        })
+        return;
+    }
+    const classCheck = await ClassModel.findOne({
+        className:data.className,
+        teacherId:req.userId
+    })
+    if(classCheck){
+        res.status(403).json({
+            "success":false,
+            "error":"class already existed !"
+        })
+        return;
+    }
+    const createClass = await ClassModel.create({
+        className:data.className,
+        teacherId:req.userId
+    })
+    if(!createClass){
+        res.status(400).json({
+            "success":false,
+            "error":"Unable to create User"
+        })
+    }
+    res.status(201).json({
+        "success":true,
+        "data":{
+            className:createClass.className,
+            classId:createClass._id,
+            teacherId:createClass.teacherId
+        }
+    })
+    return;
 })
 app.listen(port);

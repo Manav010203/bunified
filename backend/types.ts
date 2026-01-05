@@ -10,3 +10,7 @@ export const LoginSchema = z.object({
     email:z.email(),
     password:z.string()
 })
+
+export const ClassSchema = z.object({
+    className:z.string()
+})
