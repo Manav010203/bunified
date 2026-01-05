@@ -1,5 +1,5 @@
 import express from "express";
-import { ClassSchema, LoginSchema, SignupSchema } from "./types";
+import { AddStudentSchema, ClassSchema, LoginSchema, SignupSchema } from "./types";
 import { ClassModel, UserModel } from "./model";
 import { authmiddleware, TeacherRoleMiddleware } from "./middleware";
 import jwt from "jsonwebtoken";
@@ -114,5 +114,29 @@ app.post("/class",authmiddleware,TeacherRoleMiddleware,async(req,res)=>{
         }
     })
     return;
+})
+
+app.post("/class/:id/add-student",authmiddleware,TeacherRoleMiddleware,async(req,res)=>{
+    const {success,data} = AddStudentSchema.safeParse(req.body);
+
+    if(!success){
+        res.status(401).json({
+            "success":false,
+            "error":"Invalid schema of req body"
+        })
+        return;
+    }
+
+    const student = await UserModel.findOne({
+        _id:data.studentId
+    })
+    if(!student || student.role != "student"){
+        res.status(402).json({
+            "success":false,
+            "error":"No user found"
+        })
+        return;
+    }
+    
 })
 app.listen(port);
