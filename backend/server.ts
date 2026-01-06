@@ -4,7 +4,7 @@ import { ClassModel, UserModel } from "./model";
 import { authmiddleware, TeacherRoleMiddleware } from "./middleware";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-const app = express();
+export const app = express();
 const port = 3000;
 app.use(express.json());
 app.post("/auth/signup",async(req,res)=>{
@@ -243,5 +243,24 @@ app.get("/class/:id",authmiddleware,async(req,res)=>{
             }
         })
     }
+})
+
+app.get("/student/class",authmiddleware,async(req,res)=>{
+    if(req.role!=="student"){
+        res.status(403).json({
+            "success":false,
+            "error":"forbidden"
+        })
+    }
+    const studentId = req.userId;
+    const classes = await ClassModel.find({
+        studentId:studentId
+    })
+    res.status(200).json({
+        "success":true,
+        data:{
+            classes
+        }
+    })
 })
 app.listen(port);

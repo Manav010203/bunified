@@ -18,7 +18,7 @@ const ClassSchema = new mongoose.Schema({
         type:mongoose.Types.ObjectId,
         ref : "Users"
     }],
-    // createdAt:Date
+    // createdAt:Date 
 })
 export const UserModel = mongoose.model("Users",UserSchema);
 export const ClassModel = mongoose.model("Classes",ClassSchema);
