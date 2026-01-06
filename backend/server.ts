@@ -206,6 +206,15 @@ app.get("/class/:id",authmiddleware,async(req,res)=>{
             })
             return;
         }
+        res.status(200).json({
+            "success":true,
+            data:{
+                "classId":classExist._id,
+                "className":classExist.className,
+                "teacherId":classExist.teacherId,
+                "studentIds":classExist.studentId
+            }
+        })
     }
     else if(req.role === "teacher"){
         const teacherId = req.userId;
@@ -224,8 +233,15 @@ app.get("/class/:id",authmiddleware,async(req,res)=>{
             })
             return;
         }
-        
-
+        res.status(200).json({
+            "success":true,
+            data:{
+                "classId":classExist._id,
+                "className":classExist.className,
+                "teacherId":classExist.teacherId,
+                "studentIds":classExist.studentId
+            }
+        })
     }
 })
 app.listen(port);
