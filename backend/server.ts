@@ -3,6 +3,7 @@ import { AddStudentSchema, ClassSchema, LoginSchema, SignupSchema } from "./type
 import { ClassModel, UserModel } from "./model";
 import { authmiddleware, TeacherRoleMiddleware } from "./middleware";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 const app = express();
 const port = 3000;
 app.use(express.json());
@@ -143,7 +144,7 @@ app.post("/class/:id/add-student",authmiddleware,TeacherRoleMiddleware,async(req
     })
     if(!classExist){
         res.status(401).json({
-            "success":false;
+            "success":false,
             "erro":"Class not found"
         })
         return;
@@ -169,6 +170,62 @@ app.post("/class/:id/add-student",authmiddleware,TeacherRoleMiddleware,async(req
     })
 })
 app.get("/class/:id",authmiddleware,async(req,res)=>{
-    
+    const classId = req.params.id;
+    if(!classId){
+        res.status(404).json({
+            "success":false,
+            "error":"id not found in url"
+        })
+        return;
+    }
+    const classExist = await ClassModel.findOne({
+        _id:classId
+    })
+    if(!classExist){
+        res.status(404).json({
+            "success":false,
+            "error":"class not found"
+        })
+        return;
+    }
+    if(req.role === "student"){
+        const studentID = req.userId;
+        if(!studentID){
+            res.status(404).json({
+                "success":false,
+                "error":"student Id not found"
+            })
+            return;
+        }
+        const setOfStudentIDs = new Set(classExist.studentId);
+        const found = setOfStudentIDs.has(new mongoose.Types.ObjectId(studentID));
+        if(!found){
+            res.status(403).json({
+                "success":false,
+                "error":"Not authorized"
+            })
+            return;
+        }
+    }
+    else if(req.role === "teacher"){
+        const teacherId = req.userId;
+        if(!teacherId){
+            res.status(404).json({
+                "success":false,
+                "error":"teacher Id not found"
+            })
+            return;
+        }
+        const id = new mongoose.Types.ObjectId(teacherId);
+        if(id !== classExist.teacherId){
+            res.status(403).json({
+                "success":false,
+                "error":"Forbidden to check not the creator of the class"
+            })
+            return;
+        }
+        
+
+    }
 })
 app.listen(port);
