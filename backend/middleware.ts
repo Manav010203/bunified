@@ -20,14 +20,14 @@ export const authmiddleware = (req:Request,res:Response,next:NextFunction)=>{
             "success":false,
             "error":"Unauthorized, token missing or invalid"
         })
-        return;
+        // return;
     }
 }
 
 export const TeacherRoleMiddleware = (req:Request,res:Response,next:NextFunction)=>{
    if(!req.role || req.role != "teacher"){
     res.status(403).json({
-        "succes":false,
+        "success":false,
         "error":"Forbidden. teacher access required only"
     })
     return;

@@ -1,9 +1,12 @@
 import express from "express";
-import { AddStudentSchema, ClassSchema, LoginSchema, SignupSchema } from "./types";
-import { ClassModel, UserModel } from "./schema";
-import { authmiddleware, TeacherRoleMiddleware } from "./middleware";
+// import { AddStudentSchema, ClassSchema, LoginSchema, SignupSchema } from "./types";
+// import { ClassModel, UserModel } from "./schema";
+// import { authmiddleware, TeacherRoleMiddleware } from "./middleware";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { AddStudentSchema, ClassSchema, LoginSchema, SignupSchema } from "../types";
+import { ClassModel, UserModel } from "../schema";
+import { authmiddleware, TeacherRoleMiddleware } from "../middleware";
 const app = express();
 const port = 3000;
 app.use(express.json());
@@ -44,7 +47,7 @@ app.post("/auth/signup",async(req,res)=>{
         }
     })
 })
-app.post("/auth/login",authmiddleware,async(req,res)=>{
+app.post("/auth/login",async(req,res)=>{
     const {success,data} = LoginSchema.safeParse(req.body);
     if(!success){
         res.status(401).json({
