@@ -137,6 +137,38 @@ app.post("/class/:id/add-student",authmiddleware,TeacherRoleMiddleware,async(req
         })
         return;
     }
+    const classId = req.params.id;
+    const classExist = await ClassModel.findOne({
+        _id:classId
+    })
+    if(!classExist){
+        res.status(401).json({
+            "success":false;
+            "erro":"Class not found"
+        })
+        return;
+    }
+    const addedStudent =await ClassModel.updateOne({
+        _id:classId},
+        {$addToSet : {studentId:student.id}}
+    )
+    if(!addedStudent){
+        res.status(401).json({
+            "success":false,
+            "error":"unable to add student"
+        })
+        return;
+    }
+    res.status(201).json({
+        "success":true,
+        data:{
+            "classId":classId,
+            "studentID":student.id,
+            "className":classExist.className
+        }
+    })
+})
+app.get("/class/:id",authmiddleware,async(req,res)=>{
     
 })
 app.listen(port);
