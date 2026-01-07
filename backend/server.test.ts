@@ -3,12 +3,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import app from "."; // your Express app
 import mongoose from "mongoose";
 
-/**
- * This test suite is designed like an exam.
- * Each test has a short explanation of what it checks.
- * Completing these tests helps a junior engineer understand
- * authentication, authorization, and CRUD flows in a classroom backend.
- */
+
 
 let teacherToken: string;
 let studentToken: string;
@@ -64,13 +59,7 @@ describe("Classroom Backend Exam", () => {
     await mongoose.connection.close();
   });
 
-  /**
-   * Test 1: Teacher can create a class
-   * Explanation:
-   *  - Only teachers can create classes.
-   *  - Checks authorization and correct schema validation.
-   *  - Stores classId for later tests.
-   */
+  
   it("Teacher can create class", async () => {
     const res = await request(app)
       .post("/class")
@@ -118,12 +107,6 @@ describe("Classroom Backend Exam", () => {
     expect(res.body.data.classes[0]._id).toBe(classId);
   });
 
-  /**
-   * Test 4: Teacher cannot add the same student twice
-   * Explanation:
-   *  - Tests $addToSet functionality: duplicates should not be inserted.
-   *  - Backend should not throw error; student list remains unchanged.
-   */
   it("Teacher cannot add same student twice", async () => {
     const res = await request(app)
       .post(`/class/${classId}/add-student`)
